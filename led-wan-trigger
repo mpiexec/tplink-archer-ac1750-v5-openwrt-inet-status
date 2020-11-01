@@ -2,7 +2,7 @@
 
 wan_led_green='/sys/devices/platform/leds/leds/tp-link:green:wan/brightness'
 wan_led_orange='/sys/devices/platform/leds/leds/tp-link:orange:wan/brightness'
-timeo=5
+timeo=10
 ip='8.8.8.8'
 
 led_on(){
