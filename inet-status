@@ -1,0 +1,33 @@
+#!/bin/sh
+
+wan_led_green='/sys/devices/platform/leds/leds/tp-link:green:wan/brightness'
+wan_led_orange='/sys/devices/platform/leds/leds/tp-link:orange:wan/brightness'
+timeo=10
+
+led_enable(){
+    echo 255 > $1
+}
+led_disable(){
+    echo 0 > $1
+}
+
+while :; do
+
+    istat=$(ping -q -c1 -W1 8.8.8.8 &>/dev/null && echo 'ok' || echo 'no')
+    nstat=$(swconfig dev switch0 show | grep 'link:' | grep 'port:0' | cut -d ' ' -f3 | cut -d: -f2)
+
+	if [ "$istat" = "ok" ]; then
+        led_disable $wan_led_orange
+        led_enable $wan_led_green
+    else if [ "$nstat" = "down" ]; then
+        led_disable $wan_led_orange
+        led_disable $wan_led_green
+    else
+        led_disable $wan_led_green
+        led_enable $wan_led_orange         
+    fi
+
+    sleep $timeo
+done 
+
+# vim: set ts=4 sts=4 sw=4 et:
