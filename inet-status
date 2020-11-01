@@ -12,8 +12,8 @@ led_off(){
     echo 0 > $1
 }
 led_blink(){
-    led="$1"
-    stat="$2"
+    local led="$1"
+    local stat="$2"
     if [ "$stat" -eq 0 ]; then
         led_on "$led"
     elif [ "$stat" -eq 255 ]; then
@@ -24,17 +24,17 @@ led_blink(){
 }
 
 while :; do
-    local nstat=""
-    local istat=""
-    local bled="$wan_led_orange"
-    local bstat="255"
+    nstat=""
+    istat=""
+    bled="$wan_led_orange"
+    bstat="255"
 
     nstat=$(swconfig dev switch0 show | grep 'link:' | grep 'port:1' | cut -d ' ' -f3 | cut -d: -f2)
 
     if [ "$nstat" = "down" ]; then
         led_off "$wan_led_orange"
         led_off "$wan_led_green"
-        bstat=0
+        bstat="0"
     else
         istat=$(ping -q -c1 -W1 $ip &>/dev/null && echo ok)
         if [ "$istat" = "ok" ]; then
