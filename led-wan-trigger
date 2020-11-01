@@ -6,10 +6,10 @@ timeo=10
 ip='8.8.8.8'
 
 led_on(){
-    echo 255 > $1
+    echo 255 > "$1"
 }
 led_off(){
-    echo 0 > $1
+    echo 0 > "$1"
 }
 led_blink(){
     local led="$1"
@@ -19,7 +19,7 @@ led_blink(){
     elif [ "$stat" -eq 255 ]; then
         led_off "$led"
     fi
-    /bin/sleep "0.1"
+    /bin/sleep '0.1'
     echo "$stat" > "$led"
 }
 
@@ -27,14 +27,14 @@ while :; do
     nstat=""
     istat=""
     bled="$wan_led_orange"
-    bstat="255"
+    bstat=255
 
     nstat=$(swconfig dev switch0 show | grep 'link:' | grep 'port:1' | cut -d ' ' -f3 | cut -d: -f2)
 
     if [ "$nstat" = "down" ]; then
         led_off "$wan_led_orange"
         led_off "$wan_led_green"
-        bstat="0"
+        bstat=0
     else
         istat=$(ping -q -c1 -W1 $ip &>/dev/null && echo ok)
         if [ "$istat" = "ok" ]; then
