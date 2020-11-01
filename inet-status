@@ -16,7 +16,7 @@ while :; do
     istat=$(ping -q -c1 -W1 8.8.8.8 &>/dev/null && echo 'ok' || echo 'no')
     nstat=$(swconfig dev switch0 show | grep 'link:' | grep 'port:0' | cut -d ' ' -f3 | cut -d: -f2)
 
-	if [ "$istat" = "ok" ]; then
+    if [ "$istat" = "ok" ]; then
         led_disable $wan_led_orange
         led_enable $wan_led_green
     else if [ "$nstat" = "down" ]; then
@@ -24,7 +24,7 @@ while :; do
         led_disable $wan_led_green
     else
         led_disable $wan_led_green
-        led_enable $wan_led_orange         
+        led_enable $wan_led_orange 
     fi
 
     sleep $timeo
