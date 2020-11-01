@@ -12,8 +12,8 @@ led_off(){
     echo 0 > $1
 }
 led_blink(){
-    local led="$1"
-    local stat="$2"
+    led="$1"
+    stat="$2"
     if [ "$stat" -eq 0 ]; then
         led_on "$led"
     elif [ "$stat" -eq 255 ]; then
