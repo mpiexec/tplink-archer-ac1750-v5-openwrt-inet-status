@@ -2,32 +2,53 @@
 
 wan_led_green='/sys/devices/platform/leds/leds/tp-link:green:wan/brightness'
 wan_led_orange='/sys/devices/platform/leds/leds/tp-link:orange:wan/brightness'
-timeo=10
+timeo=5
+ip='8.8.8.8'
 
-led_enable(){
+led_on(){
     echo 255 > $1
 }
-led_disable(){
+led_off(){
     echo 0 > $1
+}
+led_blink(){
+    local led="$1"
+    local stat="$2"
+    if [ "$stat" -eq 0 ]; then
+        led_on "$led"
+    elif [ "$stat" -eq 255 ]; then
+        led_off "$led"
+    fi
+    /bin/sleep "0.1"
+    echo "$stat" > "$led"
 }
 
 while :; do
+    local nstat=""
+    local istat=""
+    local bled="$wan_led_orange"
+    local bstat="255"
 
-    istat=$(ping -q -c1 -W1 8.8.8.8 &>/dev/null && echo 'ok' || echo 'no')
-    nstat=$(swconfig dev switch0 show | grep 'link:' | grep 'port:0' | cut -d ' ' -f3 | cut -d: -f2)
+    nstat=$(swconfig dev switch0 show | grep 'link:' | grep 'port:1' | cut -d ' ' -f3 | cut -d: -f2)
 
-    if [ "$istat" = "ok" ]; then
-        led_disable $wan_led_orange
-        led_enable $wan_led_green
-    elif [ "$nstat" = "down" ]; then
-        led_disable $wan_led_orange
-        led_disable $wan_led_green
+    if [ "$nstat" = "down" ]; then
+        led_off "$wan_led_orange"
+        led_off "$wan_led_green"
+        bstat=0
     else
-        led_disable $wan_led_green
-        led_enable $wan_led_orange 
+        istat=$(ping -q -c1 -W1 $ip &>/dev/null && echo ok)
+        if [ "$istat" = "ok" ]; then
+            led_off "$wan_led_orange"
+            led_on "$wan_led_green"
+            bled="$wan_led_green"
+        else
+            led_off "$wan_led_green"
+            led_on "$wan_led_orange"
+        fi
     fi
 
-    sleep $timeo
+    sleep "$timeo"
+    led_blink "$bled" "$bstat"
 done 
 
 # vim: set ts=4 sts=4 sw=4 et:
