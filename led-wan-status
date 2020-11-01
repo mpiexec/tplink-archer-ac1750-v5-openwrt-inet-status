@@ -2,10 +2,10 @@
 
 START=99
 STOP=1
-process=$(pgrep -f inet-status)
+process=$(pgrep -f led-wan-trigger)
 
 start(){
-    /usr/bin/inet-status &
+    /usr/bin/led-wan-trigger &
 }
 
 stop(){
@@ -14,7 +14,7 @@ stop(){
 
 restart(){
     kill -9 $process
-    /usr/bin/inet-status &
+    /usr/bin/led-wan-trigger &
 }
 
 # vim: set ts=4 sts=4 sw=4 et:
